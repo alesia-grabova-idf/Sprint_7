@@ -11,8 +11,9 @@ import praktikum.models.Courier;
 
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_CONFLICT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+import org.assertj.core.api.SoftAssertions;
+
 import static praktikum.utils.Utils.randomString;
 
 @RunWith(Parameterized.class)
@@ -32,13 +33,13 @@ public class CourierCreationNegativeTest {
   @Parameterized.Parameters(name = "{index}: {0}")
   public static Object[][] testData() {
     return new Object[][]{
-        {"Without login field", new Courier().withPassword(randomString(12)).withFirstName(randomString(20)),
+        {"Without login field", new Courier(null, randomString(12), randomString(20)),
             SC_BAD_REQUEST,
             "Недостаточно данных для создания учетной записи"},
-        {"Without password field", new Courier().withLogin(randomString(8)).withFirstName(randomString(20)),
+        {"Without password field", new Courier(randomString(8), null, randomString(20)),
             SC_BAD_REQUEST, "Недостаточно данных для создания учетной записи"},
         {"Creation with existing courier",
-            new Courier().withLogin(randomString(8)).withPassword(randomString(12)).withFirstName(randomString(20)),
+            new Courier(randomString(8), randomString(12), randomString(20)),
             SC_CONFLICT, "Этот логин уже используется"}
     };
   }
@@ -58,8 +59,16 @@ public class CourierCreationNegativeTest {
 
     Response response = courierClient.create(courier);
 
-    assertEquals("Неверный статус код для " + expectedError, expectedStatusCode, response.statusCode());
-    assertTrue("Ожидается сообщение об ошибке: " + expectedError, response.body().asString().contains(expectedError));
+    SoftAssertions softAssertions = new SoftAssertions();
+    softAssertions.assertThat(response.statusCode())
+        .as("Неверный статус код для " + expectedError)
+        .isEqualTo(expectedStatusCode);
+
+    softAssertions.assertThat(response.body().asString())
+        .as("Ожидается сообщение об ошибке: " + expectedError)
+        .contains(expectedError);
+
+    softAssertions.assertAll();
   }
 }
 

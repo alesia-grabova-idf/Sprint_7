@@ -7,9 +7,10 @@ import praktikum.models.Courier;
 public class CourierGenerator {
 
   public static Courier randomCourier() {
-    return new Courier()
-        .withLogin(randomString(8))
-        .withPassword(randomString(12))
-        .withFirstName(randomString(20));
+    return new Courier(
+        (randomString(8)),
+        (randomString(12)),
+        (randomString(20))
+    );
   }
 }

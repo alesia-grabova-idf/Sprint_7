@@ -53,9 +53,7 @@ public class CourierLoginTest {
     courierClient.create(courier);
 
     // Меняем пароль на неверный
-    Courier wrongPasswordCourier = new Courier()
-        .withLogin(courier.getLogin())
-        .withPassword("wrongPassword");
+    Courier wrongPasswordCourier = new Courier(courier.getLogin(), "wrongPassword", courier.getFirstName());
 
     Response loginResponse = courierClient.login(wrongPasswordCourier);
 
@@ -66,9 +64,7 @@ public class CourierLoginTest {
   @Test
   @DisplayName("Login with non existent courier")
   public void loginWithNonExistentCourier() {
-    Courier nonExistentCourier = new Courier()
-        .withLogin("nonExistentLogin")
-        .withPassword("anyPassword");
+    Courier nonExistentCourier = new Courier("nonExistentLogin", "anyPassword", null);
 
     Response loginResponse = courierClient.login(nonExistentCourier);
 
@@ -82,8 +78,7 @@ public class CourierLoginTest {
     Courier courier = randomCourier();
     courierClient.create(courier);
 
-    Courier noLoginCourier = new Courier()
-        .withPassword(courier.getPassword());
+    Courier noLoginCourier = new Courier(null, courier.getPassword(), courier.getFirstName());
 
     Response loginResponse = courierClient.login(noLoginCourier);
 
@@ -98,9 +93,7 @@ public class CourierLoginTest {
     Courier courier = randomCourier();
     courierClient.create(courier);
 
-    Courier noPasswordCourier = new Courier()
-        .withLogin(courier.getLogin())
-        .withPassword("");
+    Courier noPasswordCourier = new Courier(courier.getLogin(), "", courier.getFirstName());
 
     Response loginResponse = courierClient.login(noPasswordCourier);
 
